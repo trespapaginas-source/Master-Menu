@@ -551,43 +551,46 @@
         // URL DE TU CMS EN GOOGLE SHEETS
         const API_URL = "https://script.google.com/macros/library/d/1EtVn4RLJB5u9QQ-MfszpOCD3Mvo_cvBuOtUUzbR6lvI_s9Wiia-rsB9Q/2";
 
-        // FALLBACK DATA (Si falla la conexión)
-        const SAMPLE_DATA = [
-            { id: 101, category: "Comidas", subcategory: "Sushi Bar", name: "Gold Dragon Roll", description: "Anguila ahumada, foie gras, láminas de oro comestible y trufa negra.", price: 45000, image_url: "https://images.unsplash.com/photo-1615555474641-5d9c283eb268?auto=format&fit=crop&w=600&q=80", tags: "Chef's Choice", active: true, category_image: "https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?auto=format&fit=crop&w=800&q=80" },
-            { id: 102, category: "Comidas", subcategory: "Sushi Bar", name: "Tuna Tartare", description: "Atún aleta azul, aguacate, aceite de sésamo y chips de wonton.", price: 38000, image_url: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80", tags: "", active: true },
-            { id: 401, category: "Bebidas", subcategory: "Cócteles", name: "Sunset Spritz", description: "Prosecco, Aperol, infusión de naranja sanguina y romero.", price: 32000, image_url: "https://images.unsplash.com/photo-1560512823-8db03e16384b?auto=format&fit=crop&w=600&q=80", tags: "Popular", active: true, category_image: "https://images.unsplash.com/photo-1563911302283-d2bc129e7c1f?auto=format&fit=crop&w=800&q=80" },
-            { id: 601, category: "Postres", subcategory: "Dulces", name: "Dark Chocolate Fondant", description: "70% cacao, corazón fundido y helado de pistacho artesanal.", price: 24000, image_url: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80", tags: "", active: true, category_image: "https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=800&q=80" }
-        ];
-
         const state = { products: [], currentCategory: null, currentView: 'grid', searchTerm: '', config: null };
         
         // --- 1. CONEXIÓN API ---
         async function init() {
             try {
-                // Fetch a la API de Google Apps Script
-                const response = await fetch(API_URL);
+                // Fetch a la API con TIMESTAMP para evitar caché
+                const response = await fetch(API_URL + "?t=" + new Date().getTime());
+                
+                if (!response.ok) throw new Error("Error HTTP: " + response.status);
+                
                 const apiData = await response.json();
                 
-                if (apiData && apiData.products) {
+                if (apiData && apiData.products && apiData.products.length > 0) {
                     console.log("✅ Datos cargados desde CMS:", apiData);
                     state.products = apiData.products;
                     state.config = apiData.config;
                     aplicarConfiguracionCMS(apiData.config);
+                    renderHome();
                 } else {
-                    throw new Error("Datos vacíos");
+                    throw new Error("El Google Sheet está vacío o no tiene productos activos.");
                 }
             } catch (e) {
-                console.warn("⚠️ Error cargando CMS, usando respaldo local.", e);
-                state.products = SAMPLE_DATA;
+                console.error("⚠️ Error Fatal CMS:", e);
+                // Mostrar alerta visual al usuario
+                document.getElementById('app-loader').innerHTML = `
+                    <div style="text-align:center; color:white; padding:20px;">
+                        <h3 style="color:#FF4757">Error de Conexión</h3>
+                        <p style="font-size:0.9rem; color:#aaa; margin-top:10px;">No pudimos cargar el menú.</p>
+                        <p style="font-size:0.8rem; color:#666; margin-top:5px;">Verifica que el script esté publicado como 'Aplicación Web' y acceso 'Cualquiera'.</p>
+                        <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; background:#fff; border-radius:20px; font-weight:bold;">Reintentar</button>
+                    </div>
+                `;
+                return; // Detener ejecución para no cargar datos falsos
             }
-
-            renderHome();
             
-            // Quitar Loader
+            // Quitar Loader solo si todo salió bien
             document.getElementById('app-loader').style.opacity = '0';
             setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 600);
 
-            // Verificar Popup (Desde CMS si existe, sino lógica default)
+            // Verificar Popup
             const popupActivo = state.config ? (state.config.ACTIVAR_POPUP === true || state.config.ACTIVAR_POPUP === "TRUE") : true;
             if(popupActivo && !sessionStorage.getItem('promo_seen')) {
                 setTimeout(() => document.getElementById('promo-modal').classList.add('open'), 1500);
@@ -676,12 +679,14 @@
             }).join('');
         }
 
-        window.openCategory = (cat) => {
-            state.currentCategory = cat;
+        window.openCategory = (catName) => {
+            // Normalizar string para evitar errores de espacios
+            const targetCat = catName.trim();
+            state.currentCategory = targetCat;
             state.searchTerm = ''; ui.searchInput.value = '';
             
             // CAMBIO DE FONDO BODY
-            const catData = state.products.find(p => p.category === cat && p.category_image);
+            const catData = state.products.find(p => p.category === targetCat && p.category_image);
             if (catData && catData.category_image) {
                 document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('${catData.category_image}')`;
             }
@@ -692,7 +697,7 @@
 
             const allCats = [...new Set(state.products.map(p => p.category))];
             ui.macroNav.innerHTML = allCats.map(c => `
-                <div class="macro-pill ${c === cat ? 'active' : ''}" onclick="openCategory('${c}')">${c}</div>
+                <div class="macro-pill ${c === targetCat ? 'active' : ''}" onclick="openCategory('${c}')">${c}</div>
             `).join('');
 
             renderProducts();
@@ -724,9 +729,15 @@
                 );
                 ui.subNav.innerHTML = ''; 
             } else {
-                filtered = state.products.filter(p => p.category === state.currentCategory && (p.active !== false)); // Soporte para CMS boolean
+                // Filtrado estricto por categoría normalizada
+                filtered = state.products.filter(p => 
+                    p.category === state.currentCategory && 
+                    (p.active !== false)
+                );
                 
-                const subs = [...new Set(filtered.map(p => p.subcategory))];
+                // Obtener subcategorías únicas y limpias
+                const subs = [...new Set(filtered.map(p => p.subcategory ? p.subcategory.trim() : 'General'))];
+                
                 ui.subNav.innerHTML = subs.map((sub, i) => `
                     <div class="sub-link ${i===0?'active':''}" 
                          id="link-${sub.replace(/\s+/g,'-')}" 
@@ -737,9 +748,11 @@
             if (state.searchTerm.length > 0) {
                  ui.productsInner.innerHTML = filtered.length ? renderCards(filtered) : '<div style="color:#888; padding:30px; grid-column:1/-1; text-align:center; font-family:var(--font-title); font-size:1.2rem;">No se encontraron resultados.</div>';
             } else {
-                const subs = [...new Set(filtered.map(p => p.subcategory))];
+                const subs = [...new Set(filtered.map(p => p.subcategory ? p.subcategory.trim() : 'General'))];
+                
                 ui.productsInner.innerHTML = subs.map(sub => {
-                    const subProds = filtered.filter(p => p.subcategory === sub);
+                    // Filtrar productos de esta subcategoría
+                    const subProds = filtered.filter(p => (p.subcategory ? p.subcategory.trim() : 'General') === sub);
                     return `
                         <div style="grid-column: 1 / -1;" id="sec-${sub.replace(/\s+/g,'-')}">
                             <h3 class="section-title">${sub}</h3>
