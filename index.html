@@ -697,12 +697,10 @@
             state.currentCategory = targetCat;
             state.searchTerm = ''; ui.searchInput.value = '';
             
-            // CAMBIO DE FONDO BODY
-            const catData = state.products.find(p => p.category === targetCat && p.category_image);
-            if (catData && catData.category_image) {
-                document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('${catData.category_image}')`;
-            }
-
+            // CAMBIO DE FONDO BODY - SE USA UN FONDO DE MARMOL PLANO AHORA
+            // Se sobreescribe el fondo dinámico de la categoría por uno Luxury fijo
+            document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.95)), url('https://images.unsplash.com/photo-1615800098779-1be8287d6b34?auto=format&fit=crop&q=80')`;
+            
             // ANIMACIÓN
             ui.home.classList.add('inactive'); 
             ui.menu.classList.add('active');
