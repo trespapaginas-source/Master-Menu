@@ -425,7 +425,7 @@
             margin-top: 10px;
         }
 
-        /* --- PROMO MODAL NO-BUTTON --- */
+        /* --- PROMO MODAL --- */
         .promo-card {
             background: #000; width: 85%; max-width: 400px;
             border: 1px solid var(--primary); border-radius: 24px;
@@ -436,7 +436,6 @@
         }
         #promo-modal.open .promo-card { transform: scale(1); opacity: 1; }
         .promo-img { height: 350px; object-fit: cover; opacity: 1; width: 100%; }
-        /* Overlay gradiente sobre la imagen para texto legible */
         .promo-overlay-text {
             position: absolute; bottom: 0; left: 0; width: 100%;
             padding: 40px 20px 20px 20px;
@@ -495,7 +494,6 @@
                         <input type="text" class="search-input" id="search-input" placeholder="Buscar...">
                     </div>
 
-                    <!-- TOGGLE DE VISTA (LATIDO QUE SE DETIENE) -->
                     <div class="view-controls-container">
                         <button class="btn-view-trigger" id="btn-view-trigger" onclick="toggleViewMenu()">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
@@ -534,7 +532,6 @@
                 <p class="sheet-desc" id="sheet-desc"></p>
                 <div class="sheet-price-display" id="sheet-price"></div>
             </div>
-            <!-- Eliminados footer, botones de agregar y contadores -->
         </div>
     </div>
 
@@ -551,10 +548,10 @@
     </div>
 
     <script>
-        // URL DE TU CMS EN GOOGLE SHEETS
+        // URL DE TU CMS EN GOOGLE SHEETS - ASEGÚRATE DE QUE TERMINE EN /exec
         const API_URL = "https://script.google.com/macros/s/AKfycbyqoAs69igtBuwCyLpWidZJMa4R7wpa02nTT6GU8fBqSfkKvtG18-LfFuiG-E6TWKFl/exec";
 
-        // FALLBACK DATA (VACÍO PARA EVITAR DATOS FALSOS)
+        // FALLBACK DATA (VACÍO - PARA EVITAR CONFUSIONES VISUALES)
         const SAMPLE_DATA = [];
 
         const state = { products: [], currentCategory: null, currentView: 'grid', searchTerm: '', config: null };
@@ -571,7 +568,6 @@
                 
                 // LÓGICA DE DATOS REALES:
                 // Si apiData existe, lo usamos. Si products está vacío, mostramos vacío.
-                // NO usaremos datos de relleno si esto falla o viene vacío.
                 if (apiData) {
                     console.log("✅ Datos cargados desde CMS:", apiData);
                     state.products = apiData.products || []; 
@@ -584,9 +580,22 @@
                 }
 
             } catch (e) {
-                console.error("⚠️ Error de Conexión con Google Sheets:", e);
-                // Opcional: Mostrar alerta visual de que no se pudo cargar
-                // Pero NO cargar datos falsos.
+                console.error("⚠️ Error Fatal CMS:", e);
+                // ALERTAR AL USUARIO SI FALLA LA CONEXIÓN
+                // Esto te confirma que NO ESTÁS VIENDO DATOS DE MENTIRA
+                document.getElementById('home-view').innerHTML = `
+                    <div style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding: 40px; color: #fff;">
+                        <h3 style="color: #FF4757; font-size: 2rem;">⚠️ ERROR DE CONEXIÓN</h3>
+                        <p style="margin: 20px 0;">No pudimos conectar con tu Google Sheet.</p>
+                        <p style="font-size: 0.9rem; color: #aaa;">Posibles causas:</p>
+                        <ul style="font-size: 0.8rem; color: #aaa; list-style: none; padding: 0;">
+                            <li>1. El script no está implementado como "Cualquier usuario".</li>
+                            <li>2. La URL en el código es incorrecta (debe terminar en /exec).</li>
+                            <li>3. La hoja de Google Sheets está vacía o mal nombrada.</li>
+                        </ul>
+                        <button onclick="location.reload()" style="margin-top:30px; padding:12px 25px; background:var(--primary); border:none; border-radius:30px; font-weight:bold; cursor:pointer;">REINTENTAR</button>
+                    </div>
+                `;
             }
             
             // Quitar Loader
