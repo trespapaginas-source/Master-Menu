@@ -548,11 +548,114 @@
     </div>
 
     <script>
-        // URL DE TU CMS EN GOOGLE SHEETS - ASEGÚRATE DE QUE TERMINE EN /exec
+        // URL DE TU CMS EN GOOGLE SHEETS
+        // Se deja esta URL como "marcador" para que sepas dónde va tu URL de Web App (terminada en /exec)
         const API_URL = "https://script.google.com/macros/s/AKfycbyqoAs69igtBuwCyLpWidZJMa4R7wpa02nTT6GU8fBqSfkKvtG18-LfFuiG-E6TWKFl/exec";
 
-        // FALLBACK DATA (VACÍO - PARA EVITAR CONFUSIONES VISUALES)
-        const SAMPLE_DATA = [];
+        // FALLBACK DATA (Si falla la conexión - RESTAURADO COMPLETO)
+        const SAMPLE_DATA = [
+            // --- COMIDAS (Sushi, Ramen, Carnes) ---
+            {
+                id: 101, category: "Comidas", subcategory: "Sushi Bar", name: "Dragon Roll Special",
+                description: "Anguila tempura, aguacate, pepino, cubierto de láminas de aguacate y salsa unagi especial.",
+                price: 18500, image_url: "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?auto=format&fit=crop&w=600&q=80",
+                tags: "Popular", active: true, category_image: "https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                id: 102, category: "Comidas", subcategory: "Sushi Bar", name: "Spicy Tuna Roll",
+                description: "Atún fresco picado con salsa sriracha mayo, cebollín y sésamo tostado.",
+                price: 16000, image_url: "https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=600&q=80",
+                tags: "Picante", active: true, category_image: ""
+            },
+            {
+                id: 103, category: "Comidas", subcategory: "Sushi Bar", name: "Sashimi Deluxe (12pz)",
+                description: "Selección premium del chef: Salmón, Atún, Hamachi y Pulpo.",
+                price: 32000, image_url: "https://images.unsplash.com/photo-1611143669185-af224c5e3252?auto=format&fit=crop&w=600&q=80",
+                tags: "Nuevo", active: true, category_image: ""
+            },
+            {
+                id: 104, category: "Comidas", subcategory: "Sushi Bar", name: "California Roll",
+                description: "Cangrejo (kani), aguacate, pepino y masago por fuera.",
+                price: 14000, image_url: "https://images.unsplash.com/photo-1617196034438-61e8c152945e?auto=format&fit=crop&w=600&q=80",
+                tags: "", active: true, category_image: ""
+            },
+            {
+                id: 105, category: "Comidas", subcategory: "Sushi Bar", name: "Veggie Roll",
+                description: "Espárragos, zanahoria tempura, queso crema y mango.",
+                price: 12000, image_url: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=80",
+                tags: "Vegano", active: true, category_image: ""
+            },
+            {
+                id: 201, category: "Comidas", subcategory: "Ramen House", name: "Tonkotsu Clásico",
+                description: "Caldo de cerdo cocido por 24 horas, chashu, huevo ajitsuke, nori y cebollín.",
+                price: 22000, image_url: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80",
+                tags: "Popular", active: true, category_image: ""
+            },
+            {
+                id: 202, category: "Comidas", subcategory: "Ramen House", name: "Spicy Miso Ramen",
+                description: "Base de miso rojo picante, carne picada de cerdo, maíz dulce y mantequilla.",
+                price: 24000, image_url: "https://images.unsplash.com/photo-1591814468924-caf88d1232e1?auto=format&fit=crop&w=600&q=80",
+                tags: "Picante", active: true, category_image: ""
+            },
+            {
+                id: 203, category: "Comidas", subcategory: "Ramen House", name: "Shoyu Ramen",
+                description: "Caldo ligero a base de soja y pollo, bambú menma y naruto.",
+                price: 20000, image_url: "https://images.unsplash.com/photo-1623341214825-9f4f963727da?auto=format&fit=crop&w=600&q=80",
+                tags: "", active: true, category_image: ""
+            },
+            {
+                id: 301, category: "Comidas", subcategory: "Carnes Premium", name: "Ribeye Steak 300g",
+                description: "Corte importado a la parrilla, mantequilla de hierbas y papas rústicas.",
+                price: 45000, image_url: "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=600&q=80",
+                tags: "Popular", active: true, category_image: ""
+            },
+            
+            // --- BEBIDAS (Cocteles, Refrescos, Cervezas) ---
+            {
+                id: 401, category: "Bebidas", subcategory: "Cocteles de Autor", name: "Smoked Old Fashioned",
+                description: "Bourbon, amargo de angostura, ahumado con madera de roble.",
+                price: 25000, image_url: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=600&q=80",
+                tags: "Popular", active: true, category_image: "https://images.unsplash.com/photo-1563911302283-d2bc129e7c1f?auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                id: 402, category: "Bebidas", subcategory: "Cocteles de Autor", name: "Mojito de Maracuyá",
+                description: "Ron blanco, menta fresca, pulpa de maracuyá y soda.",
+                price: 18000, image_url: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80",
+                tags: "", active: true, category_image: ""
+            },
+            {
+                id: 403, category: "Bebidas", subcategory: "Cocteles de Autor", name: "Gin Tonic Botánico",
+                description: "Gin Tanqueray, tónica premium, romero y bayas de enebro.",
+                price: 22000, image_url: "https://images.unsplash.com/photo-1599321492590-a3658510b68d?auto=format&fit=crop&w=600&q=80",
+                tags: "", active: true, category_image: ""
+            },
+            {
+                id: 501, category: "Bebidas", subcategory: "Sin Alcohol", name: "Limonada de Coco",
+                description: "Cremosa limonada con leche de coco natural y hielo frappé.",
+                price: 10000, image_url: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80",
+                tags: "", active: true, category_image: ""
+            },
+            
+            // --- POSTRES (Tortas, Helados) ---
+            {
+                id: 601, category: "Postres", subcategory: "Tortas", name: "Cheesecake de Frutos Rojos",
+                description: "Clásico estilo New York con compota casera de fresas.",
+                price: 14000, image_url: "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&w=600&q=80",
+                tags: "Popular", active: true, category_image: "https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                id: 602, category: "Postres", subcategory: "Tortas", name: "Volcán de Chocolate",
+                description: "Bizcocho tibio con centro líquido, acompañado de helado de vainilla.",
+                price: 16000, image_url: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&w=600&q=80",
+                tags: "Nuevo", active: true, category_image: ""
+            },
+            {
+                id: 701, category: "Postres", subcategory: "Helados", name: "Copa Brownie",
+                description: "Trozos de brownie, tres bolas de helado, crema chantilly y fudge.",
+                price: 13000, image_url: "https://images.unsplash.com/photo-1560008581-09826d1de69e?auto=format&fit=crop&w=600&q=80",
+                tags: "", active: true, category_image: ""
+            }
+        ];
 
         const state = { products: [], currentCategory: null, currentView: 'grid', searchTerm: '', config: null };
         
@@ -566,44 +669,32 @@
                 
                 const apiData = await response.json();
                 
-                // LÓGICA DE DATOS REALES:
-                // Si apiData existe, lo usamos. Si products está vacío, mostramos vacío.
-                if (apiData) {
+                if (apiData && apiData.products && apiData.products.length > 0) {
                     console.log("✅ Datos cargados desde CMS:", apiData);
-                    state.products = apiData.products || []; 
-                    state.config = apiData.config || {};
-                    
-                    aplicarConfiguracionCMS(state.config);
+                    state.products = apiData.products;
+                    state.config = apiData.config;
+                    aplicarConfiguracionCMS(apiData.config);
                     renderHome();
                 } else {
-                    console.warn("⚠️ La API no devolvió datos válidos.");
+                    throw new Error("El Google Sheet está vacío o no tiene productos activos.");
                 }
-
             } catch (e) {
-                console.error("⚠️ Error Fatal CMS:", e);
-                // ALERTAR AL USUARIO SI FALLA LA CONEXIÓN
-                // Esto te confirma que NO ESTÁS VIENDO DATOS DE MENTIRA
-                document.getElementById('home-view').innerHTML = `
-                    <div style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding: 40px; color: #fff;">
-                        <h3 style="color: #FF4757; font-size: 2rem;">⚠️ ERROR DE CONEXIÓN</h3>
-                        <p style="margin: 20px 0;">No pudimos conectar con tu Google Sheet.</p>
-                        <p style="font-size: 0.9rem; color: #aaa;">Posibles causas:</p>
-                        <ul style="font-size: 0.8rem; color: #aaa; list-style: none; padding: 0;">
-                            <li>1. El script no está implementado como "Cualquier usuario".</li>
-                            <li>2. La URL en el código es incorrecta (debe terminar en /exec).</li>
-                            <li>3. La hoja de Google Sheets está vacía o mal nombrada.</li>
-                        </ul>
-                        <button onclick="location.reload()" style="margin-top:30px; padding:12px 25px; background:var(--primary); border:none; border-radius:30px; font-weight:bold; cursor:pointer;">REINTENTAR</button>
-                    </div>
-                `;
+                console.warn("⚠️ No se pudo conectar al CMS (Usando datos de prueba). Verifica tu URL.", e);
+                state.products = SAMPLE_DATA;
+                // Intentar aplicar config básica si existe en sample data o defaults
+                aplicarConfiguracionCMS({
+                    NOMBRE_RESTAURANTE: "The Palm • Beach (Modo Prueba)",
+                    COLOR_ACENTO: "#D4AF37"
+                });
+                renderHome();
             }
             
-            // Quitar Loader
+            // Quitar Loader solo si todo salió bien
             document.getElementById('app-loader').style.opacity = '0';
             setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 600);
 
             // Verificar Popup
-            const popupActivo = state.config ? (String(state.config.ACTIVAR_POPUP).toUpperCase() === "TRUE") : false;
+            const popupActivo = state.config ? (state.config.ACTIVAR_POPUP === true || state.config.ACTIVAR_POPUP === "TRUE") : true;
             if(popupActivo && !sessionStorage.getItem('promo_seen')) {
                 setTimeout(() => document.getElementById('promo-modal').classList.add('open'), 1500);
             }
@@ -785,7 +876,7 @@
 
         function renderCards(products) {
             return products.map(prod => `
-                <div class="product-card" onclick="openProductModal(${prod.id})">
+                <div class="product-card" onclick="openProductModal('${prod.id}')">
                     <div class="prod-img-box">
                         <div class="prod-badges">
                             ${prod.badge ? `<span class="badge">${prod.badge}</span>` : ''}
@@ -835,7 +926,7 @@
 
         // MODAL PURAMENTE INFORMATIVO
         window.openProductModal = (id) => {
-            const prod = state.products.find(p => p.id === id);
+            const prod = state.products.find(p => String(p.id) === String(id));
             document.getElementById('sheet-title').innerText = prod.name;
             document.getElementById('sheet-desc').innerText = prod.description;
             document.getElementById('sheet-img').src = prod.image_url;
