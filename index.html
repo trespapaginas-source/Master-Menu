@@ -549,7 +549,112 @@
 
     <script>
         // URL DE TU CMS EN GOOGLE SHEETS
-        const API_URL = "https://script.google.com/macros/library/d/1EtVn4RLJB5u9QQ-MfszpOCD3Mvo_cvBuOtUUzbR6lvI_s9Wiia-rsB9Q/2";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyqoAs69igtBuwCyLpWidZJMa4R7wpa02nTT6GU8fBqSfkKvtG18-LfFuiG-E6TWKFl/exec";
+
+        // FALLBACK DATA (Si falla la conexión - RESTAURADO COMPLETO)
+        const SAMPLE_DATA = [
+            // --- COMIDAS (Sushi, Ramen, Carnes) ---
+            {
+                id: 101, category: "Comidas", subcategory: "Sushi Bar", name: "Dragon Roll Special",
+                description: "Anguila tempura, aguacate, pepino, cubierto de láminas de aguacate y salsa unagi especial.",
+                price: 18500, image_url: "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?auto=format&fit=crop&w=600&q=80",
+                tags: "Popular", active: true, category_image: "https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                id: 102, category: "Comidas", subcategory: "Sushi Bar", name: "Spicy Tuna Roll",
+                description: "Atún fresco picado con salsa sriracha mayo, cebollín y sésamo tostado.",
+                price: 16000, image_url: "https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=600&q=80",
+                tags: "Picante", active: true, category_image: ""
+            },
+            {
+                id: 103, category: "Comidas", subcategory: "Sushi Bar", name: "Sashimi Deluxe (12pz)",
+                description: "Selección premium del chef: Salmón, Atún, Hamachi y Pulpo.",
+                price: 32000, image_url: "https://images.unsplash.com/photo-1611143669185-af224c5e3252?auto=format&fit=crop&w=600&q=80",
+                tags: "Nuevo", active: true, category_image: ""
+            },
+            {
+                id: 104, category: "Comidas", subcategory: "Sushi Bar", name: "California Roll",
+                description: "Cangrejo (kani), aguacate, pepino y masago por fuera.",
+                price: 14000, image_url: "https://images.unsplash.com/photo-1617196034438-61e8c152945e?auto=format&fit=crop&w=600&q=80",
+                tags: "", active: true, category_image: ""
+            },
+            {
+                id: 105, category: "Comidas", subcategory: "Sushi Bar", name: "Veggie Roll",
+                description: "Espárragos, zanahoria tempura, queso crema y mango.",
+                price: 12000, image_url: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=80",
+                tags: "Vegano", active: true, category_image: ""
+            },
+            {
+                id: 201, category: "Comidas", subcategory: "Ramen House", name: "Tonkotsu Clásico",
+                description: "Caldo de cerdo cocido por 24 horas, chashu, huevo ajitsuke, nori y cebollín.",
+                price: 22000, image_url: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80",
+                tags: "Popular", active: true, category_image: ""
+            },
+            {
+                id: 202, category: "Comidas", subcategory: "Ramen House", name: "Spicy Miso Ramen",
+                description: "Base de miso rojo picante, carne picada de cerdo, maíz dulce y mantequilla.",
+                price: 24000, image_url: "https://images.unsplash.com/photo-1591814468924-caf88d1232e1?auto=format&fit=crop&w=600&q=80",
+                tags: "Picante", active: true, category_image: ""
+            },
+            {
+                id: 203, category: "Comidas", subcategory: "Ramen House", name: "Shoyu Ramen",
+                description: "Caldo ligero a base de soja y pollo, bambú menma y naruto.",
+                price: 20000, image_url: "https://images.unsplash.com/photo-1623341214825-9f4f963727da?auto=format&fit=crop&w=600&q=80",
+                tags: "", active: true, category_image: ""
+            },
+            {
+                id: 301, category: "Comidas", subcategory: "Carnes Premium", name: "Ribeye Steak 300g",
+                description: "Corte importado a la parrilla, mantequilla de hierbas y papas rústicas.",
+                price: 45000, image_url: "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=600&q=80",
+                tags: "Popular", active: true, category_image: ""
+            },
+            
+            // --- BEBIDAS (Cocteles, Refrescos, Cervezas) ---
+            {
+                id: 401, category: "Bebidas", subcategory: "Cocteles de Autor", name: "Smoked Old Fashioned",
+                description: "Bourbon, amargo de angostura, ahumado con madera de roble.",
+                price: 25000, image_url: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=600&q=80",
+                tags: "Popular", active: true, category_image: "https://images.unsplash.com/photo-1563911302283-d2bc129e7c1f?auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                id: 402, category: "Bebidas", subcategory: "Cocteles de Autor", name: "Mojito de Maracuyá",
+                description: "Ron blanco, menta fresca, pulpa de maracuyá y soda.",
+                price: 18000, image_url: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80",
+                tags: "", active: true, category_image: ""
+            },
+            {
+                id: 403, category: "Bebidas", subcategory: "Cocteles de Autor", name: "Gin Tonic Botánico",
+                description: "Gin Tanqueray, tónica premium, romero y bayas de enebro.",
+                price: 22000, image_url: "https://images.unsplash.com/photo-1599321492590-a3658510b68d?auto=format&fit=crop&w=600&q=80",
+                tags: "", active: true, category_image: ""
+            },
+            {
+                id: 501, category: "Bebidas", subcategory: "Sin Alcohol", name: "Limonada de Coco",
+                description: "Cremosa limonada con leche de coco natural y hielo frappé.",
+                price: 10000, image_url: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80",
+                tags: "", active: true, category_image: ""
+            },
+            
+            // --- POSTRES (Tortas, Helados) ---
+            {
+                id: 601, category: "Postres", subcategory: "Tortas", name: "Cheesecake de Frutos Rojos",
+                description: "Clásico estilo New York con compota casera de fresas.",
+                price: 14000, image_url: "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&w=600&q=80",
+                tags: "Popular", active: true, category_image: "https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                id: 602, category: "Postres", subcategory: "Tortas", name: "Volcán de Chocolate",
+                description: "Bizcocho tibio con centro líquido, acompañado de helado de vainilla.",
+                price: 16000, image_url: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&w=600&q=80",
+                tags: "Nuevo", active: true, category_image: ""
+            },
+            {
+                id: 701, category: "Postres", subcategory: "Helados", name: "Copa Brownie",
+                description: "Trozos de brownie, tres bolas de helado, crema chantilly y fudge.",
+                price: 13000, image_url: "https://images.unsplash.com/photo-1560008581-09826d1de69e?auto=format&fit=crop&w=600&q=80",
+                tags: "", active: true, category_image: ""
+            }
+        ];
 
         const state = { products: [], currentCategory: null, currentView: 'grid', searchTerm: '', config: null };
         
@@ -573,17 +678,14 @@
                     throw new Error("El Google Sheet está vacío o no tiene productos activos.");
                 }
             } catch (e) {
-                console.error("⚠️ Error Fatal CMS:", e);
-                // Mostrar alerta visual al usuario
-                document.getElementById('app-loader').innerHTML = `
-                    <div style="text-align:center; color:white; padding:20px;">
-                        <h3 style="color:#FF4757">Error de Conexión</h3>
-                        <p style="font-size:0.9rem; color:#aaa; margin-top:10px;">No pudimos cargar el menú.</p>
-                        <p style="font-size:0.8rem; color:#666; margin-top:5px;">Verifica que el script esté publicado como 'Aplicación Web' y acceso 'Cualquiera'.</p>
-                        <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; background:#fff; border-radius:20px; font-weight:bold;">Reintentar</button>
-                    </div>
-                `;
-                return; // Detener ejecución para no cargar datos falsos
+                console.warn("⚠️ No se pudo conectar al CMS (Usando datos de prueba). Verifica tu URL.", e);
+                state.products = SAMPLE_DATA;
+                // Intentar aplicar config básica si existe en sample data o defaults
+                aplicarConfiguracionCMS({
+                    NOMBRE_RESTAURANTE: "The Palm • Beach (Modo Prueba)",
+                    COLOR_ACENTO: "#D4AF37"
+                });
+                renderHome();
             }
             
             // Quitar Loader solo si todo salió bien
